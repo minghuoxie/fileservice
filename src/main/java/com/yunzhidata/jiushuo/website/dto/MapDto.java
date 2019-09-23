@@ -33,4 +33,13 @@ public class MapDto<T>{
     public void setResult(T result) {
         this.result = result;
     }
+
+    public void setAttributes(boolean flag,String info){
+        this.flag=false;
+        this.info=info;
+    }
+    public void setAttributes(boolean flag,String info,T t){
+        setAttributes(flag,info);
+        this.result=t;
+    }
 }

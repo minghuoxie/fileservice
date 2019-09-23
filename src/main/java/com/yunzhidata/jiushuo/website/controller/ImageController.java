@@ -19,8 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
 
 @Controller
 public class ImageController {
@@ -38,7 +36,7 @@ public class ImageController {
     @RequestMapping(value = "/upfile",method = RequestMethod.POST)
     @ResponseBody
     public ImageDto upfile(MultipartFile file){
-        ImageDto dto=new ImageDto();
+        ImageDto dto= new ImageDto();
         if(file!=null&&file.getOriginalFilename().endsWith(".png")||file.getOriginalFilename().endsWith(".jpg")){
             String fileType=".jpg";
             if(file.getOriginalFilename().endsWith(".png")){
@@ -62,9 +60,7 @@ public class ImageController {
 
 //                D:\data\imgpath\201909   D:\\data\\imgpath\\201909\\1569224545002.jpg   imgpath=D:/data/imgpath/
                 String saveFilePath=saveFile.getAbsolutePath().replaceAll("\\\\+","/").replaceAll(path,"");
-                dto.setFlag(true);
-                dto.setInfo("保存成功");
-                dto.setUrl(fwq+"/loadfile/"+saveFilePath);
+                dto.setAttributes(true,"保存成功",fwq+"/loadfile/"+saveFilePath);
             } catch (IOException e) {
                 e.printStackTrace();
             }finally{
