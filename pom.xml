@@ -94,6 +94,12 @@
             <version>3.4.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.9</version>
+        </dependency>
+
         <!--
         Optional dependency. Needed only if you deploy `ImageIO` plugins as part of a web app.
         Make sure you add the `IIOProviderContextListener` to your `web.xml`, see above.
