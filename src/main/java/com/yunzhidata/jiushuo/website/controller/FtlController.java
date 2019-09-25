@@ -15,9 +15,30 @@ public class FtlController {
         return mv;
     }
 
+    //上传文件
     @GetMapping("/file/upfile")
     public ModelAndView upfile(ModelAndView mv){
         mv.setViewName("imgdir/saveimg");
+        return mv;
+    }
+
+    //减少质量
+    @GetMapping("/file/reduceQuaity")
+    public ModelAndView reduceQuaity(ModelAndView mv){
+        mv.setViewName("testCon/reduceQuaity");
+        return mv;
+    }
+
+    //图像的裁剪
+    @GetMapping("/file/tailoring")
+    public ModelAndView tailoring(ModelAndView mv){
+        mv.setViewName("testCon/tailoring");
+        return mv;
+    }
+
+    @GetMapping("/file/iscmykorrgb")
+    public ModelAndView iscmykorrgb(ModelAndView mv){
+        mv.setViewName("testCon/isCmykOrRgb");
         return mv;
     }
 

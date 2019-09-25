@@ -6,6 +6,7 @@ package com.yunzhidata.jiushuo.website.controller;
 
 
 import com.yunzhidata.jiushuo.website.dto.ImageDto;
+import com.yunzhidata.jiushuo.website.input.ImgInputType;
 import com.yunzhidata.jiushuo.website.util.UtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +31,15 @@ public class ImageController {
     @Autowired
     private UtilService utilService;
 
+
+    /**
+     * 图片的质量压缩   只能处理png格式的图片
+     * */
+    @RequestMapping(value = "/imgDispatch",method = RequestMethod.POST)
+    @ResponseBody
+    public ImageDto imgDispatch(ImgInputType input){
+        return utilService.imgDispatch(input);
+    }
     /**
      * 上传图片  java的JDK只支持PNG格式   问题大
      * */
@@ -83,8 +93,6 @@ public class ImageController {
         }
         return dto;
     }
-
-
 
     /**
      * 访问图片
