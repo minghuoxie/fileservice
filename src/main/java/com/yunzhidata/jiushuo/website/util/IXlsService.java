@@ -4,4 +4,5 @@ public interface IXlsService {
     void xlsExport();
     void headSheetOne();
     void excelDemoLocal();
+    void testAnnotationXls();
 }

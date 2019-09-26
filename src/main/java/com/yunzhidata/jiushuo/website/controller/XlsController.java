@@ -28,7 +28,7 @@ public class XlsController {
     @ResponseBody
     public MapDto imgDispatch(ImgInputType input){
         MapDto dto=new MapDto();
-        xlsService.excelDemoLocal();
+        xlsService.testAnnotationXls();
         dto.setAttributes(true,"来了，手机打开了");
         return dto;
     }

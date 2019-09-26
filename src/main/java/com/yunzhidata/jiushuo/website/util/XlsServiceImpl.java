@@ -2,6 +2,8 @@ package com.yunzhidata.jiushuo.website.util;
 
 import com.yunzhidata.jiushuo.website.dto.Chenji;
 import com.yunzhidata.jiushuo.website.dto.RangeHelp;
+import com.yunzhidata.jiushuo.website.help.xlsgenelate.XlsGenete;
+import com.yunzhidata.jiushuo.website.help.xlstestentity.Peo;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -536,6 +538,45 @@ public class XlsServiceImpl implements IXlsService {
         list.add(yjTwo);
         list.add(yjSan);
         list.add(yjSi);
+        return list;
+    }
+
+
+    //测试使用注解的方式
+    @Override
+    public void testAnnotationXls(){
+        XlsGenete<Peo> xlsGenete=new XlsGenete<Peo>();
+        HSSFWorkbook workbook=xlsGenete.createWorkBook(list(),Peo.class);
+
+        String filename = "测试使用Annotation的1.xls";//设置下载时客户端Excel的名称
+        File file = new File(path + filename);
+        try {
+            file.createNewFile();
+            OutputStream outputStream = new FileOutputStream(file);
+            workbook.write(outputStream);
+            outputStream.flush();
+            outputStream.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    private List<Peo> list(){
+        List<Peo> list=new ArrayList<>();
+        //String name, Integer number, Integer age, String addr
+        Peo peoOne=new Peo("李四",110,5,"贵州惠水");
+        Peo peoTwo=new Peo("张三",111,5,"六盘水");
+        Peo peoSan=new Peo("张三",119,5,"六盘水");
+        Peo peoSi=new Peo("张三",119,5,"贵州惠水");
+        Peo peoWu=new Peo("张三",114,6,"贵州惠水");
+        Peo peoLiu=new Peo("张三",118,6,"贵州惠水");
+        Peo peoQi=new Peo("王五",118,7,"六盘水");
+        list.add(peoOne);
+        list.add(peoTwo);
+        list.add(peoSan);
+        list.add(peoSi);
+        list.add(peoWu);
+        list.add(peoLiu);
+        list.add(peoQi);
         return list;
     }
 }
