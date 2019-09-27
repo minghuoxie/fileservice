@@ -9,6 +9,7 @@ public class ImgInputType {
     /**
      * 1 代表质量压缩
      * 2 代表图片的裁剪
+     * 3 代表图片的旋转
      * */
     private Integer type;
 
@@ -16,6 +17,8 @@ public class ImgInputType {
     private Integer pointY;
     private Integer wigth;
     private Integer height;
+
+    private Integer degree;
 
     public Integer getPointX() {
         return pointX;
@@ -63,5 +66,13 @@ public class ImgInputType {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public Integer getDegree() {
+        return degree;
+    }
+
+    public void setDegree(Integer degree) {
+        this.degree = degree;
     }
 }

@@ -17,12 +17,16 @@ public @interface ExcelColumn {
     Aligment alignment() default Aligment.CENTER;
 
     VerticalAlignment verticalAlignment() default VerticalAlignment.CENTER;
-
+    //列宽
     int width() default 5000;
 
     String fondName() default "楷体";
     int fondSize() default 10;
+    //是否加粗
     boolean isBlowd() default false;
 
     boolean isMerge() default  false; //是否合并列   最好不要使用
+
+    String[] comp() default {};
+
 }

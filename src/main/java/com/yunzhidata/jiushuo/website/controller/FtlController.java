@@ -36,6 +36,13 @@ public class FtlController {
         return mv;
     }
 
+    //图片的旋转
+    @GetMapping("/file/ratoteImg")
+    public ModelAndView ratoteImg(ModelAndView mv){
+        mv.setViewName("testCon/ratote");
+        return mv;
+    }
+
     @GetMapping("/file/iscmykorrgb")
     public ModelAndView iscmykorrgb(ModelAndView mv){
         mv.setViewName("testCon/isCmykOrRgb");

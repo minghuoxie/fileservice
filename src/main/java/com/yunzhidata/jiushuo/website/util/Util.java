@@ -96,9 +96,36 @@ public class Util implements UtilService {
                         e.printStackTrace();
                     }
                     break;
+                case 3:
+                    try {
+                        ratateImg(input,file,dto);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
             }
         }
         return dto;
+    }
+
+    /**
+     * 图片的旋转   有问题
+     * */
+    private void ratateImg(ImgInputType input,File file,ImageDto dto) throws IOException{
+        isRgbOrCmyk(file);
+        BufferedImage bufImage = ImageIO.read(file);
+        int w=bufImage.getWidth();
+        int h=bufImage.getHeight();
+        int type=bufImage.getColorModel().getTransparency();
+        BufferedImage newImg;
+        Graphics2D graphics2D;
+        (graphics2D=(newImg=new BufferedImage(w,h,type))
+                .createGraphics()).setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics2D.rotate(Math.toRadians(input.getDegree()),w/2,h/2);
+        graphics2D.drawImage(bufImage,0,0,null);
+        graphics2D.dispose();
+        ImageIO.write(newImg,"png",file);
+        dto.setAttributes(true,"操作成功",input.getUrl());
     }
 
     /**
@@ -241,6 +268,8 @@ public class Util implements UtilService {
         if(input.getType()!=null&&input.getType()==1){
             return true;
         }else if(input.getType()!=null&&input.getType()==2){
+            return true;
+        }else if(input.getType()!=null&&input.getType()==3){
             return true;
         }
         return false;

@@ -7,6 +7,7 @@ import com.yunzhidata.jiushuo.website.help.xlstestentity.Peo;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellRangeAddressList;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -413,6 +414,18 @@ public class XlsServiceImpl implements IXlsService {
             cell.setCellStyle(columnHeadStyle);
             cell = row2.createCell(6);
 
+            CellRangeAddressList regions = new CellRangeAddressList(1,40,0,0);
+
+            //生成下拉框内容
+            String[] arrs={"one","two"};
+            DVConstraint constraint = DVConstraint.createExplicitListConstraint(arrs);
+
+            //绑定下拉框和作用区域
+            HSSFDataValidation data_validation = new HSSFDataValidation(regions,constraint);
+
+            //对sheet页生效
+            sheet.addValidationData(data_validation);
+
 
             HSSFCellStyle defaultStyle=workbook.createCellStyle();
             defaultStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
@@ -421,7 +434,8 @@ public class XlsServiceImpl implements IXlsService {
             defaultStyle.setWrapText(true);
 
             //填充成绩
-            List<Chenji> list=getList();
+          //  List<Chenji> list=getList();
+            List<Chenji> list=null;
             if(list!=null&&list.size()>0){
                 List<RangeHelp> ranges=new ArrayList<>();
                 int i=0;
@@ -548,7 +562,7 @@ public class XlsServiceImpl implements IXlsService {
         XlsGenete<Peo> xlsGenete=new XlsGenete<Peo>();
         HSSFWorkbook workbook=xlsGenete.createWorkBook(list(),Peo.class);
 
-        String filename = "测试使用Annotation的1.xls";//设置下载时客户端Excel的名称
+        String filename = "annotation合并多列1.xls";//设置下载时客户端Excel的名称
         File file = new File(path + filename);
         try {
             file.createNewFile();
@@ -563,13 +577,13 @@ public class XlsServiceImpl implements IXlsService {
     private List<Peo> list(){
         List<Peo> list=new ArrayList<>();
         //String name, Integer number, Integer age, String addr
-        Peo peoOne=new Peo("李四",110,5,"贵州惠水");
-        Peo peoTwo=new Peo("张三",111,5,"六盘水");
-        Peo peoSan=new Peo("张三",119,5,"六盘水");
-        Peo peoSi=new Peo("张三",119,5,"贵州惠水");
-        Peo peoWu=new Peo("张三",114,6,"贵州惠水");
-        Peo peoLiu=new Peo("张三",118,6,"贵州惠水");
-        Peo peoQi=new Peo("王五",118,7,"六盘水");
+        Peo peoOne=new Peo("李四",110,5,"贵州惠水","一班");
+        Peo peoTwo=new Peo("张三",111,5,"六盘水","一班");
+        Peo peoSan=new Peo("张三",119,5,"六盘水","一班");
+        Peo peoSi=new Peo("张三",119,5,"贵州惠水","一班");
+        Peo peoWu=new Peo("张三",114,6,"贵州惠水","一班");
+        Peo peoLiu=new Peo("张三",118,6,"贵州惠水","一班");
+        Peo peoQi=new Peo("王五",118,7,"六盘水","一班");
         list.add(peoOne);
         list.add(peoTwo);
         list.add(peoSan);

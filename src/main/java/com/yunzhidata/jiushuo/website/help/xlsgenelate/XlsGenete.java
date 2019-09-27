@@ -1,12 +1,12 @@
 package com.yunzhidata.jiushuo.website.help.xlsgenelate;
 
-import com.yunzhidata.jiushuo.website.help.xlsannotation.Aligment;
-import com.yunzhidata.jiushuo.website.help.xlsannotation.ExcelColumn;
-import com.yunzhidata.jiushuo.website.help.xlsannotation.ExcelWorkBook;
-import com.yunzhidata.jiushuo.website.help.xlsannotation.VerticalAlignment;
+import com.yunzhidata.jiushuo.website.help.xlsannotation.*;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellRangeAddressList;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -43,9 +43,8 @@ public class XlsGenete<T> {
                     }
                 }
                 return workbook;
-            }else{
-                throw new PoiException("初始化Excel的工作簿信息失败，请检查Excel属性是否标注 ExcelColumn 注解");
             }
+            return null;
         }
     }
 
@@ -93,6 +92,35 @@ public class XlsGenete<T> {
                                 newRg.setFirstRow(indexRow);
                                 newRg.setRangLabel(val);
                                 tangeMap.put(linExcelColumn.column()+"",newRg);
+                            }
+                        }
+                    }else if(field.isAnnotationPresent(ExcelImg.class)){
+                        ExcelImg excelImg=(ExcelImg)field.getAnnotation(ExcelImg.class);
+                        if("java.io.InputStream".equals(field.getType().getName())) {
+                            field.setAccessible(true);
+                            InputStream input = (InputStream) field.get(t);
+                            if(input!=null){
+                                try {
+                                    byte[] buf=new byte[input.available()];
+                                    input.read(buf);
+                                    int pictureIdx = workbook.addPicture(buf,HSSFWorkbook.PICTURE_TYPE_JPEG);
+                                    HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
+
+                                    //add a picture   (int dx1, int dy1, int dx2, int dy2, short col1, int row1, short col2, int row2)
+                                    HSSFClientAnchor anchor = new HSSFClientAnchor(excelImg.dx1(), excelImg.dy1(), excelImg.dx2(), excelImg.dy2(), (short)excelImg.col1(), excelImg.row1(), (short)excelImg.col2(), excelImg.row2());
+                                    HSSFPicture pict = patriarch.createPicture(anchor, pictureIdx);
+                                    pict.resize();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }finally {
+                                    if(input!=null){
+                                        try {
+                                            input.close();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -147,6 +175,23 @@ public class XlsGenete<T> {
 
             //添加cell的样式
             mapCellStyle.put(Integer.parseInt(column.column()+""),setCellStyle(column));
+
+            //添加下拉的验证
+            if(column.comp()!=null&&column.comp().length>0){
+                CellRangeAddressList regions = new CellRangeAddressList(2,100,column.column(),column.column());
+                DVConstraint constraint = DVConstraint.createExplicitListConstraint(column.comp());
+                //绑定下拉框和作用区域
+                HSSFDataValidation data_validation = new HSSFDataValidation(regions,constraint);
+                //对sheet页生效
+                sheet.addValidationData(data_validation);
+//                String[] arrStr=column.comp();
+//                CellRangeAddressList addressList = new CellRangeAddressList(2, 10, column.column(), column.column());
+//                DVConstraint dvConstraint = DVConstraint.createExplicitListConstraint(arrStr);
+//                DataValidation validation = new HSSFDataValidation(addressList, dvConstraint);
+//                validation.setSuppressDropDownArrow(true);
+//                validation.setShowErrorBox(true);
+//                sheet.addValidationData(validation);
+            }
         }
         //合并标题行 创建标题行
         CellRangeAddress titleRange = new CellRangeAddress(0, 0, minCol, maxCol);
@@ -160,6 +205,13 @@ public class XlsGenete<T> {
         HSSFCell cell0 = rowTitle.createCell(minCol);
         cell0.setCellValue(new HSSFRichTextString(headTitle.title()));
         cell0.setCellStyle(headStyie);
+
+//        CellRangeAddressList addressList = new CellRangeAddressList(firstRow, lastRow, firstCol, lastCol);
+//        DVConstraint dvConstraint = DVConstraint.createExplicitListConstraint(explicitListValues);
+//        DataValidation validation = new HSSFDataValidation(addressList, dvConstraint);
+//        validation.setSuppressDropDownArrow(true);
+//        validation.setShowErrorBox(true);
+//        sheet.addValidationData(validation);
     }
 
 
