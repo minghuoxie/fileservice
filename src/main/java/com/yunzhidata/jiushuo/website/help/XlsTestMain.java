@@ -2,6 +2,7 @@ package com.yunzhidata.jiushuo.website.help;
 
 import com.yunzhidata.jiushuo.website.dto.Chenji;
 import com.yunzhidata.jiushuo.website.dto.RangeHelp;
+import com.yunzhidata.jiushuo.website.help.img.ImgTest;
 import com.yunzhidata.jiushuo.website.help.xlsgenelate.XlsGenete;
 import com.yunzhidata.jiushuo.website.help.xlstestentity.Peo;
 import org.apache.poi.hssf.usermodel.*;
@@ -280,9 +281,7 @@ public class XlsTestMain {
 
     }
 
-    /**
-     * 绘制图形
-     * */
+
     private static List<Peo> list(){
         List<Peo> list=new ArrayList<>();
         //String name, Integer number, Integer age, String addr
@@ -304,24 +303,32 @@ public class XlsTestMain {
         return list;
     }
 
+    /**
+     * 绘制图形
+     *
+     *
+     *
+     * IVIEW  图形化
+     * */
+
 
     public static void main(String[] args){
 
-        //npoiInsertImg();
+        ImgTest.test_gxian();
 
 
-        XlsGenete<Peo> xlsGenete=new XlsGenete<Peo>();
-        HSSFWorkbook workBook=xlsGenete.createWorkBook(list(),Peo.class);
-        String filename = "annotation测试comp.xls";//设置下载时客户端Excel的名称
-        try {
-            File file = new File("D:/data/imgpath/" + filename);
-            file.createNewFile();
-            OutputStream outputStream = new FileOutputStream(file);
-            workBook.write(outputStream);
-            outputStream.flush();
-            outputStream.close();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+//        XlsGenete<Peo> xlsGenete=new XlsGenete<Peo>();
+//        HSSFWorkbook workBook=xlsGenete.createWorkBook(list(),Peo.class);
+//        String filename = "annotation测试comp.xls";//设置下载时客户端Excel的名称
+//        try {
+//            File file = new File("D:/data/imgpath/" + filename);
+//            file.createNewFile();
+//            OutputStream outputStream = new FileOutputStream(file);
+//            workBook.write(outputStream);
+//            outputStream.flush();
+//            outputStream.close();
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
     }
 }
