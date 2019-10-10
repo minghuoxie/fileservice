@@ -17,7 +17,19 @@ public class XlsGenete<T> {
     private HSSFWorkbook workbook;
     private Map<Integer,HSSFCellStyle> mapCellStyle;
 
+    private XlsBefore before;
+    private XlsAfter after;
+    public XlsGenete(){}
+//    public XlsGenete(XlsBefore before){
+//        this.before=before;
+//    }
+
     public HSSFWorkbook createWorkBook(List<T> datas,Class book){
+        return createWorkBook(null,datas,book,null);
+    }
+    public HSSFWorkbook createWorkBook(XlsBefore before,List<T> datas,Class book,XlsAfter after){
+        this.before=before;
+        this.after=after;
          headTitle=(ExcelWorkBook)book.getAnnotation(ExcelWorkBook.class);
         if(headTitle==null){
             throw new PoiException("初始化Excel的工作簿信息失败，请检查Excel实体是否标注 ExcelWorkBook 注解");
@@ -33,11 +45,11 @@ public class XlsGenete<T> {
                     }
                 }
                 //设置头  样式固定
-                createHead(sheet);
+                int indexRow=createHead(sheet);
                 //填充数据
                 if(datas!=null&&datas.size()>0){
                     try {
-                        addDatas(sheet,datas,2);
+                        addDatas(sheet,datas,indexRow);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
@@ -136,8 +148,10 @@ public class XlsGenete<T> {
             lastRange.setLastRow(indexRow-1);
             rangList.add(lastRange);
         }
-
         merge(rangList,sheet);
+        if(this.after!=null){
+            this.after.after(this.workbook,sheet,indexRow);
+        }
     }
 
     //合并行数
@@ -151,10 +165,14 @@ public class XlsGenete<T> {
     }
 
     //创建工作簿的头
-    private void createHead(HSSFSheet sheet){
+    private int createHead(HSSFSheet sheet){
+        int indexRow=1;
+        if(this.before!=null){
+            indexRow=this.before.before(this.workbook,sheet,indexRow);
+        }
         HSSFCellStyle headStyie=setHeadTitleStyle(1);
         //设置第二行  头部的标题头
-        HSSFRow row2 = sheet.createRow(1);
+        HSSFRow row2 = sheet.createRow(indexRow);
         row2.setHeight((short) headTitle.titleHeight());
         HSSFCell cell =null;
 
@@ -178,7 +196,7 @@ public class XlsGenete<T> {
 
             //添加下拉的验证
             if(column.comp()!=null&&column.comp().length>0){
-                CellRangeAddressList regions = new CellRangeAddressList(2,100,column.column(),column.column());
+                CellRangeAddressList regions = new CellRangeAddressList(indexRow+1,100,column.column(),column.column());
                 DVConstraint constraint = DVConstraint.createExplicitListConstraint(column.comp());
                 //绑定下拉框和作用区域
                 HSSFDataValidation data_validation = new HSSFDataValidation(regions,constraint);
@@ -212,6 +230,8 @@ public class XlsGenete<T> {
 //        validation.setSuppressDropDownArrow(true);
 //        validation.setShowErrorBox(true);
 //        sheet.addValidationData(validation);
+
+        return indexRow+1;
     }
 
 

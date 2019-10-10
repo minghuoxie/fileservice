@@ -11,9 +11,9 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -578,12 +578,12 @@ public class XlsServiceImpl implements IXlsService {
         List<Peo> list=new ArrayList<>();
         //String name, Integer number, Integer age, String addr
         Peo peoOne=new Peo("李四",110,5,"贵州惠水","一班");
-        Peo peoTwo=new Peo("张三",111,5,"六盘水","一班");
-        Peo peoSan=new Peo("张三",119,5,"六盘水","一班");
-        Peo peoSi=new Peo("张三",119,5,"贵州惠水","一班");
-        Peo peoWu=new Peo("张三",114,6,"贵州惠水","一班");
-        Peo peoLiu=new Peo("张三",118,6,"贵州惠水","一班");
-        Peo peoQi=new Peo("王五",118,7,"六盘水","一班");
+        Peo peoTwo=new Peo("王五",111,5,"六盘水","一班");
+        Peo peoSan=new Peo("李小平",119,5,"六盘水","一班");
+        Peo peoSi=new Peo("刘大强",119,5,"贵州惠水","一班");
+        Peo peoWu=new Peo("朱武即",114,6,"贵州惠水","一班");
+        Peo peoLiu=new Peo("李志豪",118,6,"贵州惠水","一班");
+        Peo peoQi=new Peo("刘哔",118,7,"六盘水","一班");
         list.add(peoOne);
         list.add(peoTwo);
         list.add(peoSan);
@@ -593,4 +593,164 @@ public class XlsServiceImpl implements IXlsService {
         list.add(peoQi);
         return list;
     }
+    @Override
+   public void testBeforeAndAter(){
+        List<Peo> list=list();
+        XlsGenete<Peo> gete=new XlsGenete<Peo>();
+        HSSFWorkbook workbook=gete.createWorkBook(((workbook1,sheet, indexRow) -> {
+            int newIndexRow=indexRow;
+            HSSFFont headFont=workbook1.createFont();
+            headFont.setFontName("宋体");
+            headFont.setFontHeightInPoints((short)10);
+            headFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//加粗
+
+            HSSFCellStyle headStyle=workbook1.createCellStyle();
+            headStyle.setFont(headFont);
+            headStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+            headStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//上下居中
+            headStyle.setLocked(true); //列宽固定
+            headStyle.setWrapText(true);//自动换行
+
+            HSSFRow rowTitle = sheet.createRow(newIndexRow);
+            // 设置行高
+            rowTitle.setHeight((short)700);
+            // 创建第一列260
+            HSSFCell cell0 = rowTitle.createCell(9);
+            cell0.setCellValue(new HSSFRichTextString("惠水民族中学高二年级(5)班"));
+            cell0.setCellStyle(headStyle);
+            CellRangeAddress titleRange = new CellRangeAddress(newIndexRow, newIndexRow, 9, 13);
+            newIndexRow=newIndexRow+1;
+
+            HSSFRow rowTwo=sheet.createRow(newIndexRow);
+            rowTwo.setHeight((short)700);
+            HSSFCell cel=rowTwo.createCell(9);
+            cel.setCellValue(new HSSFRichTextString("第二学期期末考试统计表"));
+            cel.setCellStyle(headStyle);
+            CellRangeAddress rangTwo=new CellRangeAddress(newIndexRow,newIndexRow,9,13);
+            newIndexRow=newIndexRow+1;
+
+            sheet.addMergedRegion(titleRange);
+            sheet.addMergedRegion(rangTwo);
+            return newIndexRow;
+        }),list,Peo.class,((workbook1, sheet, indexRow) -> {
+            int newIndexRow=indexRow;
+            HSSFFont headFont=workbook1.createFont();
+            headFont.setFontName("宋体");
+            headFont.setFontHeightInPoints((short)10);
+            headFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//加粗
+
+            HSSFCellStyle headStyle=workbook1.createCellStyle();
+            headStyle.setFont(headFont);
+            headStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+            headStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//上下居中
+            headStyle.setLocked(true); //列宽固定
+            headStyle.setWrapText(true);//自动换行
+
+            HSSFRow rowTwo=sheet.createRow(newIndexRow);
+            rowTwo.setHeight((short)700);
+            HSSFCell cel=rowTwo.createCell(9);
+            cel.setCellValue(new HSSFRichTextString("李靖老师：这个学期啊，成绩明显下降了100%，要不得，要不得勒！"));
+            cel.setCellStyle(headStyle);
+            CellRangeAddress rangTwo=new CellRangeAddress(newIndexRow,newIndexRow,9,13);
+            sheet.addMergedRegion(rangTwo);
+        }));
+        String filename = "测试前缀和后缀导出表格.xls";//设置下载时客户端Excel的名称
+        File file = new File("D:/data/imgpath/" + filename);
+        try {
+            file.createNewFile();
+            OutputStream outputStream = new FileOutputStream(file);
+            workbook.write(outputStream);
+            outputStream.flush();
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+   }
+
+   @Override
+   public void export(HttpServletResponse response){
+       String fileName = null;
+       try {
+           fileName = URLEncoder.encode( "1158.xls", "utf-8");
+       } catch (UnsupportedEncodingException e) {
+           fileName = System.currentTimeMillis() + ".xls";
+       }
+       response.setContentType("application/xls;charset=utf-8");
+       response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+
+       List<Peo> list=list();
+       XlsGenete<Peo> gete=new XlsGenete<Peo>();
+       HSSFWorkbook workbook=gete.createWorkBook(((workbook1,sheet, indexRow) -> {
+           int newIndexRow=indexRow;
+           HSSFFont headFont=workbook1.createFont();
+           headFont.setFontName("宋体");
+           headFont.setFontHeightInPoints((short)10);
+           headFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//加粗
+
+           HSSFCellStyle headStyle=workbook1.createCellStyle();
+           headStyle.setFont(headFont);
+           headStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+           headStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//上下居中
+           headStyle.setLocked(true); //列宽固定
+           headStyle.setWrapText(true);//自动换行
+
+           HSSFRow rowTitle = sheet.createRow(newIndexRow);
+           // 设置行高
+           rowTitle.setHeight((short)700);
+           // 创建第一列260
+           HSSFCell cell0 = rowTitle.createCell(9);
+           cell0.setCellValue(new HSSFRichTextString("惠水民族中学高二年级(5)班"));
+           cell0.setCellStyle(headStyle);
+           CellRangeAddress titleRange = new CellRangeAddress(newIndexRow, newIndexRow, 9, 13);
+           newIndexRow=newIndexRow+1;
+
+           HSSFRow rowTwo=sheet.createRow(newIndexRow);
+           rowTwo.setHeight((short)700);
+           HSSFCell cel=rowTwo.createCell(9);
+           cel.setCellValue(new HSSFRichTextString("第二学期期末考试统计表"));
+           cel.setCellStyle(headStyle);
+           CellRangeAddress rangTwo=new CellRangeAddress(newIndexRow,newIndexRow,9,13);
+           newIndexRow=newIndexRow+1;
+
+           sheet.addMergedRegion(titleRange);
+           sheet.addMergedRegion(rangTwo);
+           return newIndexRow;
+       }),list,Peo.class,((workbook1, sheet, indexRow) -> {
+           int newIndexRow=indexRow;
+           HSSFFont headFont=workbook1.createFont();
+           headFont.setFontName("宋体");
+           headFont.setFontHeightInPoints((short)10);
+           headFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//加粗
+
+           HSSFCellStyle headStyle=workbook1.createCellStyle();
+           headStyle.setFont(headFont);
+           headStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+           headStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//上下居中
+           headStyle.setLocked(true); //列宽固定
+           headStyle.setWrapText(true);//自动换行
+
+           HSSFRow rowTwo=sheet.createRow(newIndexRow);
+           rowTwo.setHeight((short)700);
+           HSSFCell cel=rowTwo.createCell(9);
+           cel.setCellValue(new HSSFRichTextString("李靖老师：这个学期啊，成绩明显下降了100%，要不得，要不得勒！"));
+           cel.setCellStyle(headStyle);
+           CellRangeAddress rangTwo=new CellRangeAddress(newIndexRow,newIndexRow,9,13);
+           sheet.addMergedRegion(rangTwo);
+       }));
+       OutputStream out=null;
+       try {
+           workbook.write(out=response.getOutputStream());
+           out.flush();
+       } catch (IOException e) {
+           e.printStackTrace();
+       }finally {
+           if(out!=null){
+               try {
+                   out.close();
+               } catch (IOException e) {
+                   e.printStackTrace();
+               }
+           }
+       }
+   }
 }

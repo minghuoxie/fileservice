@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 @Controller
 public class XlsController {
@@ -31,5 +34,20 @@ public class XlsController {
         xlsService.excelDemoLocal();
         dto.setAttributes(true,"来了，手机打开了");
         return dto;
+    }
+
+    @RequestMapping(value = "/xls/baexport",method = RequestMethod.GET)
+    @ResponseBody
+    public MapDto baexport(ImgInputType input){
+        MapDto dto=new MapDto();
+        xlsService.testBeforeAndAter();
+        dto.setAttributes(true,"来来来来来来来来");
+        return dto;
+    }
+
+    @RequestMapping(value = "/xls/export",method = RequestMethod.GET)
+    @ResponseBody
+    public void export(HttpServletResponse response){
+        xlsService.export(response);
     }
 }

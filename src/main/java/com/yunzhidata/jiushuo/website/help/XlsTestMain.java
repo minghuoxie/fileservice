@@ -3,6 +3,8 @@ package com.yunzhidata.jiushuo.website.help;
 import com.yunzhidata.jiushuo.website.dto.Chenji;
 import com.yunzhidata.jiushuo.website.dto.RangeHelp;
 import com.yunzhidata.jiushuo.website.help.img.ImgTest;
+import com.yunzhidata.jiushuo.website.help.xlsannotation.Aligment;
+import com.yunzhidata.jiushuo.website.help.xlsannotation.VerticalAlignment;
 import com.yunzhidata.jiushuo.website.help.xlsgenelate.XlsGenete;
 import com.yunzhidata.jiushuo.website.help.xlstestentity.Peo;
 import org.apache.poi.hssf.usermodel.*;
@@ -292,7 +294,7 @@ public class XlsTestMain {
         Peo peoWu=new Peo("张三",114,29,"贵州惠水","三班");
         Peo peoLiu=new Peo("张三",118,31,"贵州惠水","一班");
         Peo peoQi=new Peo("王五",118,33,"六盘水","一班");
-        peoQi.setInputStream(getInputStream());
+        //peoQi.setInputStream(getInputStream());
         list.add(peoOne);
         list.add(peoTwo);
         list.add(peoSan);
@@ -303,32 +305,84 @@ public class XlsTestMain {
         return list;
     }
 
-    /**
-     * 绘制图形
-     *
-     *
-     *
-     * IVIEW  图形化
-     * */
-
 
     public static void main(String[] args){
+        test_before();
+    }
 
-        ImgTest.test_gxian();
+    //测试生成 前缀
+    private static void test_before(){
+        List<Peo> list=list();
+        XlsGenete<Peo> gete=new XlsGenete<Peo>();
+        HSSFWorkbook workbook=gete.createWorkBook(((workbook1,sheet, indexRow) -> {
+            int newIndexRow=indexRow;
+            HSSFFont headFont=workbook1.createFont();
+            headFont.setFontName("宋体");
+            headFont.setFontHeightInPoints((short)10);
+            headFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//加粗
+
+            HSSFCellStyle headStyle=workbook1.createCellStyle();
+            headStyle.setFont(headFont);
+            headStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+            headStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//上下居中
+            headStyle.setLocked(true); //列宽固定
+            headStyle.setWrapText(true);//自动换行
+
+            HSSFRow rowTitle = sheet.createRow(newIndexRow);
+            // 设置行高
+            rowTitle.setHeight((short)700);
+            // 创建第一列260
+            HSSFCell cell0 = rowTitle.createCell(9);
+            cell0.setCellValue(new HSSFRichTextString("惠水民族中学高二年级(5)班"));
+            cell0.setCellStyle(headStyle);
+            CellRangeAddress titleRange = new CellRangeAddress(newIndexRow, newIndexRow, 9, 13);
+            newIndexRow=newIndexRow+1;
+
+            HSSFRow rowTwo=sheet.createRow(newIndexRow);
+            rowTwo.setHeight((short)700);
+            HSSFCell cel=rowTwo.createCell(9);
+            cel.setCellValue(new HSSFRichTextString("第二学期期末考试统计表"));
+            cel.setCellStyle(headStyle);
+            CellRangeAddress rangTwo=new CellRangeAddress(newIndexRow,newIndexRow,9,13);
+            newIndexRow=newIndexRow+1;
+
+            sheet.addMergedRegion(titleRange);
+            sheet.addMergedRegion(rangTwo);
+            return newIndexRow;
+        }),list,Peo.class,((workbook1, sheet, indexRow) -> {
+            int newIndexRow=indexRow;
+            HSSFFont headFont=workbook1.createFont();
+            headFont.setFontName("宋体");
+            headFont.setFontHeightInPoints((short)10);
+            headFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//加粗
+
+            HSSFCellStyle headStyle=workbook1.createCellStyle();
+            headStyle.setFont(headFont);
+            headStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+            headStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//上下居中
+            headStyle.setLocked(true); //列宽固定
+            headStyle.setWrapText(true);//自动换行
+
+            HSSFRow rowTwo=sheet.createRow(newIndexRow);
+            rowTwo.setHeight((short)700);
+            HSSFCell cel=rowTwo.createCell(9);
+            cel.setCellValue(new HSSFRichTextString("李靖老师：这个学期啊，成绩明显下降了100%，要不得，要不得勒！"));
+            cel.setCellStyle(headStyle);
+            CellRangeAddress rangTwo=new CellRangeAddress(newIndexRow,newIndexRow,9,13);
+            sheet.addMergedRegion(rangTwo);
+        }));
 
 
-//        XlsGenete<Peo> xlsGenete=new XlsGenete<Peo>();
-//        HSSFWorkbook workBook=xlsGenete.createWorkBook(list(),Peo.class);
-//        String filename = "annotation测试comp.xls";//设置下载时客户端Excel的名称
-//        try {
-//            File file = new File("D:/data/imgpath/" + filename);
-//            file.createNewFile();
-//            OutputStream outputStream = new FileOutputStream(file);
-//            workBook.write(outputStream);
-//            outputStream.flush();
-//            outputStream.close();
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
+        String filename = "测试导出xls表格.xls";//设置下载时客户端Excel的名称
+        File file = new File("D:/data/imgpath/" + filename);
+        try {
+            file.createNewFile();
+            OutputStream outputStream = new FileOutputStream(file);
+            workbook.write(outputStream);
+            outputStream.flush();
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
