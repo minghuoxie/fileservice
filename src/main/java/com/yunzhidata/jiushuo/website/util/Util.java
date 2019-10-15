@@ -3,6 +3,7 @@ import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGEncodeParam;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
 import com.yunzhidata.jiushuo.website.dto.ImageDto;
+import com.yunzhidata.jiushuo.website.dto.MapDto;
 import com.yunzhidata.jiushuo.website.input.ImgInputType;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
@@ -273,6 +274,19 @@ public class Util implements UtilService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public MapDto delImage(String url){
+        MapDto dto=new MapDto();
+        File file=null;
+        if((file=isFile(url)).exists()){
+            if(file.delete()){
+                dto.setFlag(true);
+                dto.setInfo("删除图片成功");
+            }
+        }
+        return dto;
     }
 
     /**

@@ -6,6 +6,7 @@ package com.yunzhidata.jiushuo.website.controller;
 
 
 import com.yunzhidata.jiushuo.website.dto.ImageDto;
+import com.yunzhidata.jiushuo.website.dto.MapDto;
 import com.yunzhidata.jiushuo.website.input.ImgInputType;
 import com.yunzhidata.jiushuo.website.util.UtilService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,15 @@ public class ImageController {
 
 
     /**
+     * 删除图片
+     * */
+    @RequestMapping(value = "/delImage",method = RequestMethod.POST)
+    @ResponseBody
+    public MapDto delImage(String url){
+        return utilService.delImage(url);
+    }
+
+    /**
      * 图片的质量压缩   只能处理png格式的图片
      * */
     @RequestMapping(value = "/imgDispatch",method = RequestMethod.POST)
@@ -40,6 +50,56 @@ public class ImageController {
     public ImageDto imgDispatch(ImgInputType input){
         return utilService.imgDispatch(input);
     }
+
+    /**
+     * 修改图片
+     * */
+    @RequestMapping(value = "/updateFile",method = RequestMethod.POST)
+    @ResponseBody
+    public ImageDto updateFile(MultipartFile file,String url){
+        utilService.delImage(url);
+        return upfile(file);
+    }
+
+    private void save(MultipartFile file,File saveFile,ImageDto dto){
+        //先将文件原样保存 在做处理
+        InputStream inputStream=null;
+        OutputStream outputStream=null;
+        try {
+            inputStream=file.getInputStream();
+            outputStream=new FileOutputStream(saveFile);
+            byte[] buf=new byte[1024*10];
+            int len=0;
+            while((len=inputStream.read(buf))!=-1){
+                outputStream.write(buf,0,len);
+                outputStream.flush();
+                buf=new byte[1024*10];
+            }
+
+//                D:\data\imgpath\201909   D:\\data\\imgpath\\201909\\1569224545002.jpg   imgpath=D:/data/imgpath/
+            String saveFilePath=saveFile.getAbsolutePath().replaceAll("\\\\+","/").replaceAll(path,"");
+            dto.setAttributes(true,"保存成功",fwq+"/loadfile/"+saveFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally{
+            if(inputStream!=null){
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if(outputStream!=null){
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     /**
      * 上传图片  java的JDK只支持PNG格式   问题大
      * */
@@ -53,43 +113,7 @@ public class ImageController {
                 fileType=".png";
             }
             File saveFile=utilService.getSaveFileName(fileType);
-
-            //先将文件原样保存 在做处理
-            InputStream inputStream=null;
-            OutputStream outputStream=null;
-            try {
-                inputStream=file.getInputStream();
-                outputStream=new FileOutputStream(saveFile);
-                byte[] buf=new byte[1024*10];
-                int len=0;
-                while((len=inputStream.read(buf))!=-1){
-                    outputStream.write(buf,0,len);
-                    outputStream.flush();
-                    buf=new byte[1024*10];
-                }
-
-//                D:\data\imgpath\201909   D:\\data\\imgpath\\201909\\1569224545002.jpg   imgpath=D:/data/imgpath/
-                String saveFilePath=saveFile.getAbsolutePath().replaceAll("\\\\+","/").replaceAll(path,"");
-                dto.setAttributes(true,"保存成功",fwq+"/loadfile/"+saveFilePath);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }finally{
-                if(inputStream!=null){
-                    try {
-                        inputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                if(outputStream!=null){
-                    try {
-                        outputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+            save(file,saveFile,dto);
         }
         return dto;
     }
