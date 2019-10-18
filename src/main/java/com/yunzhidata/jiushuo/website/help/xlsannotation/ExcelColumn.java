@@ -26,6 +26,8 @@ public @interface ExcelColumn {
     boolean isBlowd() default false;
 
     boolean isMerge() default  false; //是否合并列   最好不要使用
+    int firstNumber() default 1;
+    boolean isNumberOrder() default false;
 
     String[] comp() default {};
 

@@ -64,6 +64,7 @@ public class XlsGenete<T> {
     private void addDatas(HSSFSheet sheet,List<T> datas,int indexRow) throws IllegalAccessException {
         Map<String,XlsRange> tangeMap=new HashMap<>();
         List<XlsRange> rangList=new ArrayList<>();
+        int indexOrder=1;
         //合并操作
         for(ExcelColumn rangeCol:excelColumns){
             if(rangeCol.isMerge()){
@@ -72,9 +73,13 @@ public class XlsGenete<T> {
                 range.setFirstCol(rangeCol.column());
                 tangeMap.put(rangeCol.column()+"",range);
             }
+            if(rangeCol.isNumberOrder()){
+                indexOrder=rangeCol.firstNumber()-1;
+            }
         }
 
         for(T t:datas){
+            indexOrder++;
             Field[] declaredFields = t.getClass().getDeclaredFields();
             if(declaredFields!=null&&declaredFields.length>0){
                 HSSFRow rowi=sheet.createRow(indexRow);
@@ -82,11 +87,15 @@ public class XlsGenete<T> {
                 HSSFCell celli =null;
                 for(Field field:declaredFields){
                     if(field.isAnnotationPresent(ExcelColumn.class)){
-                        ExcelColumn linExcelColumn=(ExcelColumn)field.getAnnotation(ExcelColumn.class);
-                        celli=rowi.createCell(linExcelColumn.column());
+                        ExcelColumn linExcelColumn=(ExcelColumn)field.getAnnotation(ExcelColumn.class); celli=rowi.createCell(linExcelColumn.column());
                         field.setAccessible(true);
                         String val=field.get(t)+"";
-                        celli.setCellValue(new HSSFRichTextString(val));
+                        if(linExcelColumn.isNumberOrder()){
+                            val=indexOrder+"";
+                            celli.setCellValue(new HSSFRichTextString(val));
+                        }else{
+                            celli.setCellValue(new HSSFRichTextString(val));
+                        }
                         celli.setCellStyle(mapCellStyle.get(Integer.parseInt(linExcelColumn.column()+"")));
 
                         //合并

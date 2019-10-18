@@ -1,8 +1,13 @@
 package com.yunzhidata.jiushuo.website.util;
 
+import com.yunzhidata.jiushuo.website.aspect.AsAnnotation;
+import com.yunzhidata.jiushuo.website.aspect.AsEnum;
 import com.yunzhidata.jiushuo.website.dto.Chenji;
 import com.yunzhidata.jiushuo.website.dto.RangeHelp;
+import com.yunzhidata.jiushuo.website.help.xlsannotation.ExcelColumn;
 import com.yunzhidata.jiushuo.website.help.xlsgenelate.XlsGenete;
+import com.yunzhidata.jiushuo.website.help.xlsgenelate.XlsRange;
+import com.yunzhidata.jiushuo.website.help.xlsneedpro.XlsMap;
 import com.yunzhidata.jiushuo.website.help.xlstestentity.Peo;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -14,8 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class XlsServiceImpl implements IXlsService {
@@ -668,7 +672,9 @@ public class XlsServiceImpl implements IXlsService {
    }
 
    @Override
+   @AsAnnotation(num = AsEnum.ONE,str = "export")
    public void export(HttpServletResponse response){
+       System.out.println("1111111111111111111----------------");
        String fileName = null;
        try {
            fileName = URLEncoder.encode( "1158.xls", "utf-8");
@@ -680,6 +686,8 @@ public class XlsServiceImpl implements IXlsService {
 
        List<Peo> list=list();
        XlsGenete<Peo> gete=new XlsGenete<Peo>();
+       int firstColNum=8;
+       int lastColNum=13;
        HSSFWorkbook workbook=gete.createWorkBook(((workbook1,sheet, indexRow) -> {
            int newIndexRow=indexRow;
            HSSFFont headFont=workbook1.createFont();
@@ -698,18 +706,18 @@ public class XlsServiceImpl implements IXlsService {
            // 设置行高
            rowTitle.setHeight((short)700);
            // 创建第一列260
-           HSSFCell cell0 = rowTitle.createCell(9);
+           HSSFCell cell0 = rowTitle.createCell(firstColNum);
            cell0.setCellValue(new HSSFRichTextString("惠水民族中学高二年级(5)班"));
            cell0.setCellStyle(headStyle);
-           CellRangeAddress titleRange = new CellRangeAddress(newIndexRow, newIndexRow, 9, 13);
+           CellRangeAddress titleRange = new CellRangeAddress(newIndexRow, newIndexRow, firstColNum, lastColNum);
            newIndexRow=newIndexRow+1;
 
            HSSFRow rowTwo=sheet.createRow(newIndexRow);
            rowTwo.setHeight((short)700);
-           HSSFCell cel=rowTwo.createCell(9);
+           HSSFCell cel=rowTwo.createCell(firstColNum);
            cel.setCellValue(new HSSFRichTextString("第二学期期末考试统计表"));
            cel.setCellStyle(headStyle);
-           CellRangeAddress rangTwo=new CellRangeAddress(newIndexRow,newIndexRow,9,13);
+           CellRangeAddress rangTwo=new CellRangeAddress(newIndexRow,newIndexRow,firstColNum,lastColNum);
            newIndexRow=newIndexRow+1;
 
            sheet.addMergedRegion(titleRange);
@@ -731,10 +739,10 @@ public class XlsServiceImpl implements IXlsService {
 
            HSSFRow rowTwo=sheet.createRow(newIndexRow);
            rowTwo.setHeight((short)700);
-           HSSFCell cel=rowTwo.createCell(9);
+           HSSFCell cel=rowTwo.createCell(firstColNum);
            cel.setCellValue(new HSSFRichTextString("李靖老师：这个学期啊，成绩明显下降了100%，要不得，要不得勒！"));
            cel.setCellStyle(headStyle);
-           CellRangeAddress rangTwo=new CellRangeAddress(newIndexRow,newIndexRow,9,13);
+           CellRangeAddress rangTwo=new CellRangeAddress(newIndexRow,newIndexRow,firstColNum,lastColNum);
            sheet.addMergedRegion(rangTwo);
        }));
        OutputStream out=null;
@@ -753,4 +761,182 @@ public class XlsServiceImpl implements IXlsService {
            }
        }
    }
+
+
+
+   //动态的字段
+    @Override
+    @AsAnnotation(num = AsEnum.TWO,str = "xlsForMap")
+    public void xlsForMap(String sheetName,String topTile,String ms,Map<String,XlsMap> head,List<Map<String,Object>> datas,HttpServletResponse response){
+        String fileName = null;
+        try {
+            fileName = URLEncoder.encode( "exportformap.xls", "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            fileName = System.currentTimeMillis() + ".xls";
+        }
+        response.setContentType("application/xls;charset=utf-8");
+        response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+        HSSFWorkbook workbook=new HSSFWorkbook();
+        HSSFSheet sheet=workbook.createSheet(sheetName);
+        int minCol=99999;
+        int maxCol=-1;
+        int indexRow=0;
+        Iterator<XlsMap> iteTop=head.values().iterator();
+        while(iteTop.hasNext()){
+            XlsMap iteXlsTop=iteTop.next();
+            if(iteXlsTop.getColnum()<minCol){
+                minCol=iteXlsTop.getColnum();
+            }
+            if(iteXlsTop.getColnum()>maxCol){
+                maxCol=iteXlsTop.getColnum();
+            }
+        }
+
+        //设置样式
+        HSSFFont font = workbook.createFont();
+        HSSFFont font2 = workbook.createFont();
+        font.setFontName("微软雅黑");
+        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        font2.setFontName("微软雅黑");
+        HSSFCellStyle headerStyle = workbook.createCellStyle();
+        HSSFCellStyle textStyle = workbook.createCellStyle();
+        headerStyle.setFont(font);
+        headerStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        headerStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        headerStyle.setLocked(true); //列宽固定
+        headerStyle.setWrapText(true);//自动换行
+//        headerStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+//        headerStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+//        headerStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
+//        headerStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+
+        textStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        textStyle.setFont(font2);
+        textStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+       // textStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        textStyle.setLocked(true); //列宽固定
+        textStyle.setWrapText(true);//自动换行
+//        textStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+//        textStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+//        textStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
+//        textStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+
+        // 创建第一行
+        CellRangeAddress titleRange = new CellRangeAddress(indexRow, indexRow, minCol, maxCol);
+        sheet.addMergedRegion(titleRange);
+        HSSFRow rowTitle = sheet.createRow(indexRow++);
+        // 设置行高
+        rowTitle.setHeight((short)750);
+        // 创建第一列
+        HSSFCell cell0 = rowTitle.createCell(minCol);
+        cell0.setCellValue(new HSSFRichTextString(topTile));
+        cell0.setCellStyle(headerStyle);
+
+        if(ms!=null){
+            CellRangeAddress mxRange = new CellRangeAddress(indexRow, indexRow, minCol, maxCol);
+            sheet.addMergedRegion(mxRange);
+            HSSFRow rowMs=sheet.createRow(indexRow++);
+            rowTitle.setHeight((short)650);
+            HSSFCell celMs=rowMs.createCell(minCol);
+            celMs.setCellValue(new HSSFRichTextString(ms));
+            celMs.setCellStyle(headerStyle);
+        }
+
+        //设置标题
+        HSSFRow rowTop = sheet.createRow(indexRow++);
+        rowTop.setHeight((short) 650);
+        HSSFCell cell =null;
+        Iterator<XlsMap> iteTopTitle=head.values().iterator();
+        while(iteTopTitle.hasNext()){
+            XlsMap iteTopTitleXls=iteTopTitle.next();
+            sheet.setColumnWidth(iteTopTitleXls.getColnum(),iteTopTitleXls.getColWidth());
+            cell=rowTop.createCell(iteTopTitleXls.getColnum());
+            cell.setCellValue(iteTopTitleXls.getTopName());
+            cell.setCellStyle(headerStyle);
+        }
+
+        //填充数据
+        if(datas!=null&&datas.size()>0){
+            Map<String, XlsRange> tangeMap=new HashMap<>();
+            List<XlsRange> rangList=new ArrayList<>();
+            Iterator<XlsMap> iteRange=head.values().iterator();
+            while(iteRange.hasNext()){
+                XlsMap rangXls=iteRange.next();
+                if(rangXls.isMerge()){
+                    XlsRange range=new XlsRange();
+                    range.setFirstRow(indexRow);
+                    range.setFirstCol(rangXls.getColnum());
+                    tangeMap.put(rangXls.getColnum()+"",range);
+                }
+            }
+            for(int i=0;i<datas.size();i++){
+                Map<String,Object> map=datas.get(i);
+                HSSFRow rowDatas=sheet.createRow(indexRow);
+                rowDatas.setHeight((short) 600);
+                HSSFCell cellDtas =null;
+                Iterator<String> iteDatas=map.keySet().iterator();
+                while(iteDatas.hasNext()){
+                    String key=iteDatas.next();
+                    XlsMap headRang=(head.get(key));
+                    cellDtas=rowDatas.createCell(headRang.getColnum());
+                    String val=map.get(key)+"";
+                    cellDtas.setCellValue(new HSSFRichTextString(val));
+                    cellDtas.setCellStyle(textStyle);
+
+                    //合并
+                    if(headRang.isMerge()){
+                        XlsRange rg=tangeMap.get(headRang.getColnum()+"");
+                        if(rg.getRangLabel()==null){
+                            rg.setRangLabel(val);
+                        }else if(!val.equals(rg.getRangLabel())){
+                            rg.setLastCol(rg.getFirstCol());
+                            rg.setLastRow(indexRow-1);
+                            rangList.add(rg);
+
+                            XlsRange newRg=new XlsRange();
+                            newRg.setFirstCol(headRang.getColnum());
+                            newRg.setFirstRow(indexRow);
+                            newRg.setRangLabel(val);
+                            tangeMap.put(headRang.getColnum()+"",newRg);
+                        }
+                    }
+                }
+                indexRow++;
+            }
+            Iterator<String> iteNextRange=tangeMap.keySet().iterator();
+            while(iteNextRange.hasNext()){
+                String key=iteNextRange.next();
+                XlsRange lastRange=tangeMap.get(key);
+                lastRange.setLastCol(lastRange.getFirstCol());
+                lastRange.setLastRow(indexRow);
+                rangList.add(lastRange);
+            }
+            merge(rangList,sheet);
+        }
+        OutputStream out=null;
+        try {
+            workbook.write(out=response.getOutputStream());
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if(out!=null){
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    //合并行数
+    private void merge(List<XlsRange> rangesList,HSSFSheet sheet){
+        if(rangesList!=null&&rangesList.size()>0){
+            for(XlsRange rangHelp:rangesList) {
+                CellRangeAddress rangeDefault = new CellRangeAddress(rangHelp.getFirstRow(), rangHelp.getLastRow(), rangHelp.getFirstCol(), rangHelp.getLastCol());
+                sheet.addMergedRegion(rangeDefault);
+            }
+        }
+    }
 }

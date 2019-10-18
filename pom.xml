@@ -100,6 +100,11 @@
             <version>3.9</version>
         </dependency>
 
+        <!--通知-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
         <!--
         Optional dependency. Needed only if you deploy `ImageIO` plugins as part of a web app.
         Make sure you add the `IIOProviderContextListener` to your `web.xml`, see above.

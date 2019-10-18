@@ -8,6 +8,10 @@ import java.io.InputStream;
 
 @ExcelWorkBook(sheetName = "人员导出表",title = "测试人员导出表格",fontSize = 10,rowHeight = 900)
 public class Peo {
+
+    @ExcelColumn(title = "序号",column = 8,firstNumber = 11,isNumberOrder = true)
+    private Long id;
+
     @ExcelColumn(title = "名字",column=10,width=6000)
     private String name;
 
