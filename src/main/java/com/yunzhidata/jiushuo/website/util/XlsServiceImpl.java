@@ -7,6 +7,9 @@ import com.yunzhidata.jiushuo.website.dto.RangeHelp;
 import com.yunzhidata.jiushuo.website.help.xlsannotation.ExcelColumn;
 import com.yunzhidata.jiushuo.website.help.xlsgenelate.XlsGenete;
 import com.yunzhidata.jiushuo.website.help.xlsgenelate.XlsRange;
+import com.yunzhidata.jiushuo.website.help.xlsgenelate.xlschildstyle.FirstStyle;
+import com.yunzhidata.jiushuo.website.help.xlsgenelate.xlschildstyle.TwoStyle;
+import com.yunzhidata.jiushuo.website.help.xlsgenelate.xlsstyle.XHSSFStyleFactory;
 import com.yunzhidata.jiushuo.website.help.xlsneedpro.XlsMap;
 import com.yunzhidata.jiushuo.website.help.xlstestentity.Peo;
 import org.apache.poi.hssf.usermodel.*;
@@ -671,10 +674,89 @@ public class XlsServiceImpl implements IXlsService {
         }
    }
 
+   //
+   @Override
+   public void exportstyle(HttpServletResponse response){
+       String fileName = null;
+       try {
+           fileName = URLEncoder.encode( "导出.xls", "utf-8");
+       } catch (UnsupportedEncodingException e) {
+           fileName = System.currentTimeMillis() + ".xls";
+       }
+       response.setContentType("application/xls;charset=utf-8");
+       response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+
+       List<Peo> list=list();
+       XlsGenete<Peo> gete=new XlsGenete<Peo>();
+       int firstColNum=8;
+       int lastColNum=13;
+       HSSFWorkbook workbook=gete.createWorkBook(((workbook1,sheet, indexRow) -> {
+           int newIndexRow=indexRow;
+           HSSFRow rowTitle = sheet.createRow(newIndexRow);
+           // 设置行高
+           rowTitle.setHeight((short)700);
+           // 创建第一列260
+           HSSFCell cell0 = rowTitle.createCell(firstColNum);
+           cell0.setCellValue(new HSSFRichTextString("惠水民族中学高二年级(5)班"));
+           cell0.setCellStyle(XHSSFStyleFactory.newInstance().getStyle(workbook1,FirstStyle.class));
+           CellRangeAddress titleRange = new CellRangeAddress(newIndexRow, newIndexRow, firstColNum, lastColNum);
+           newIndexRow=newIndexRow+1;
+
+           HSSFRow rowTwo=sheet.createRow(newIndexRow);
+           rowTwo.setHeight((short)700);
+           HSSFCell cel=rowTwo.createCell(firstColNum);
+           cel.setCellValue(new HSSFRichTextString("第二学期期末考试统计表"));
+           cel.setCellStyle(XHSSFStyleFactory.newInstance().getStyle(workbook1, TwoStyle.class));
+           CellRangeAddress rangTwo=new CellRangeAddress(newIndexRow,newIndexRow,firstColNum,lastColNum);
+           newIndexRow=newIndexRow+1;
+
+           sheet.addMergedRegion(titleRange);
+           sheet.addMergedRegion(rangTwo);
+           return newIndexRow;
+       }),list,Peo.class,((workbook1, sheet, indexRow) -> {
+           int newIndexRow=indexRow;
+           HSSFFont headFont=workbook1.createFont();
+           headFont.setFontName("宋体");
+           headFont.setFontHeightInPoints((short)10);
+           headFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);//加粗
+
+           HSSFCellStyle headStyle=workbook1.createCellStyle();
+           headStyle.setFont(headFont);
+           headStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+           headStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//上下居中
+           headStyle.setLocked(true); //列宽固定
+           headStyle.setWrapText(true);//自动换行
+
+           HSSFRow rowTwo=sheet.createRow(newIndexRow);
+           rowTwo.setHeight((short)700);
+           HSSFCell cel=rowTwo.createCell(firstColNum);
+           cel.setCellValue(new HSSFRichTextString("李靖老师：这个学期啊，成绩明显下降了100%，要不得，要不得勒！"));
+           cel.setCellStyle(headStyle);
+           CellRangeAddress rangTwo=new CellRangeAddress(newIndexRow,newIndexRow,firstColNum,lastColNum);
+           sheet.addMergedRegion(rangTwo);
+       }));
+       OutputStream out=null;
+       try {
+           workbook.write(out=response.getOutputStream());
+           out.flush();
+       } catch (IOException e) {
+           e.printStackTrace();
+       }finally {
+           if(out!=null){
+               try {
+                   out.close();
+               } catch (IOException e) {
+                   e.printStackTrace();
+               }
+           }
+       }
+   }
+
+
+
    @Override
    @AsAnnotation(num = AsEnum.ONE,str = "export")
    public void export(HttpServletResponse response){
-       System.out.println("1111111111111111111----------------");
        String fileName = null;
        try {
            fileName = URLEncoder.encode( "1158.xls", "utf-8");

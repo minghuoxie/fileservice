@@ -50,6 +50,12 @@ public class XlsController {
         return dto;
     }
 
+    @RequestMapping(value = "/xls/exportstyle",method = RequestMethod.GET)
+    @ResponseBody
+    public void exportstyle(HttpServletResponse response){
+        xlsService.exportstyle(response);
+    }
+
     @RequestMapping(value = "/xls/export",method = RequestMethod.GET)
     @ResponseBody
     public void export(HttpServletResponse response){

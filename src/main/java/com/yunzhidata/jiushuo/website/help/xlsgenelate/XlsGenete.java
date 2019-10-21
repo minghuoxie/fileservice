@@ -2,6 +2,7 @@ package com.yunzhidata.jiushuo.website.help.xlsgenelate;
 
 import com.yunzhidata.jiushuo.website.help.xlsannotation.*;
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
 
@@ -158,6 +159,12 @@ public class XlsGenete<T> {
             rangList.add(lastRange);
         }
         merge(rangList,sheet);
+
+        // 自适应宽度大小
+        for(ExcelColumn column:excelColumns){
+            sheet.autoSizeColumn((short)column.column(),true);
+            System.out.println("set:"+column.width()+"----get:"+sheet.getColumnWidth(column.column()));
+        }
         if(this.after!=null){
             this.after.after(this.workbook,sheet,indexRow);
         }
@@ -194,7 +201,7 @@ public class XlsGenete<T> {
 
             minCol=minCol<column.column()?minCol:column.column();
             maxCol=maxCol>column.column()?maxCol:column.column();
-            sheet.setColumnWidth(column.column(),column.width());
+           // sheet.setColumnWidth(column.column(),column.width());
 
             cell=row2.createCell(column.column());
             cell.setCellValue(column.title());
@@ -270,9 +277,9 @@ public class XlsGenete<T> {
         }else if(ecolumn.verticalAlignment()==VerticalAlignment.BOTTOM){
             cellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_BOTTOM);
         }
-
-        cellStyle.setLocked(true); //列宽固定
-        cellStyle.setWrapText(true);//自动换行
+        cellStyle.setFillBackgroundColor(HSSFColor.RED.index);
+//        cellStyle.setLocked(true); //列宽固定
+//        cellStyle.setWrapText(true);//自动换行
         return cellStyle;
     }
 
@@ -305,8 +312,8 @@ public class XlsGenete<T> {
         }else if(headTitle.verticalAlignment()==VerticalAlignment.BOTTOM){
             headStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_BOTTOM);
         }
-        headStyle.setLocked(true); //列宽固定
-        headStyle.setWrapText(true);//自动换行
+//        headStyle.setLocked(true); //列宽固定
+//        headStyle.setWrapText(true);//自动换行
         return headStyle;
     }
 }

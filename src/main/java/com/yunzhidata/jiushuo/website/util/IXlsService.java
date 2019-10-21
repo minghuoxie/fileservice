@@ -16,5 +16,6 @@ public interface IXlsService {
     void testBeforeAndAter();
 
     void export(HttpServletResponse response);
+    void exportstyle(HttpServletResponse response);
     void xlsForMap(String sheetName, String topTile, String ms, Map<String, XlsMap> head, List<Map<String,Object>> datas,HttpServletResponse response);
 }
