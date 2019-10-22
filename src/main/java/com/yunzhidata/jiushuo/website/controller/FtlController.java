@@ -49,4 +49,11 @@ public class FtlController {
         return mv;
     }
 
+
+    @GetMapping("/socket/websocket")
+    public ModelAndView websocket(ModelAndView mv){
+        mv.setViewName("websocket/websocket");
+        return mv;
+    }
+
 }

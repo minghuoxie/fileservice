@@ -3,6 +3,7 @@ package com.yunzhidata.jiushuo.website.help;
 import com.yunzhidata.jiushuo.website.dto.Chenji;
 import com.yunzhidata.jiushuo.website.dto.RangeHelp;
 import com.yunzhidata.jiushuo.website.help.img.ImgTest;
+import com.yunzhidata.jiushuo.website.help.img.TestNum;
 import com.yunzhidata.jiushuo.website.help.xlsannotation.Aligment;
 import com.yunzhidata.jiushuo.website.help.xlsannotation.VerticalAlignment;
 import com.yunzhidata.jiushuo.website.help.xlsgenelate.XlsGenete;
@@ -307,7 +308,8 @@ public class XlsTestMain {
 
 
     public static void main(String[] args){
-        test_before();
+
+        //test_before();
     }
 
     //测试生成 前缀

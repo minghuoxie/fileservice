@@ -105,6 +105,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
+
+        <!--websocket依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
         <!--
         Optional dependency. Needed only if you deploy `ImageIO` plugins as part of a web app.
         Make sure you add the `IIOProviderContextListener` to your `web.xml`, see above.
