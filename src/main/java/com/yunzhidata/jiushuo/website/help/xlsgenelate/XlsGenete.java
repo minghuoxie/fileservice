@@ -163,7 +163,9 @@ public class XlsGenete<T> {
         // 自适应宽度大小
         for(ExcelColumn column:excelColumns){
             sheet.autoSizeColumn((short)column.column(),true);
-            System.out.println("set:"+column.width()+"----get:"+sheet.getColumnWidth(column.column()));
+            if(sheet.getColumnWidth(column.column())<column.width()){
+                sheet.setColumnWidth(column.column(),column.width());
+            }
         }
         if(this.after!=null){
             this.after.after(this.workbook,sheet,indexRow);
@@ -312,6 +314,10 @@ public class XlsGenete<T> {
         }else if(headTitle.verticalAlignment()==VerticalAlignment.BOTTOM){
             headStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_BOTTOM);
         }
+
+//        headStyle.setFillPattern((short)1);
+//        headStyle.setFillBackgroundColor((short)9);
+//        headStyle.setFillForegroundColor((short)63);
 //        headStyle.setLocked(true); //列宽固定
 //        headStyle.setWrapText(true);//自动换行
         return headStyle;

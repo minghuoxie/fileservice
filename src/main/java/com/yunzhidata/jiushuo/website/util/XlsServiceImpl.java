@@ -14,6 +14,7 @@ import com.yunzhidata.jiushuo.website.help.xlsneedpro.XlsMap;
 import com.yunzhidata.jiushuo.website.help.xlstestentity.Peo;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.springframework.beans.factory.annotation.Value;
@@ -584,7 +585,7 @@ public class XlsServiceImpl implements IXlsService {
     private List<Peo> list(){
         List<Peo> list=new ArrayList<>();
         //String name, Integer number, Integer age, String addr
-        Peo peoOne=new Peo("李四",110,5,"贵州惠水","一班");
+        Peo peoOne=new Peo("李四",110,5,"贵州惠水打发打发dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddfgdfgdfsdsdfdfgdfgsddfgdfgsdffdhfghsdfsdfsdfd","一班");
         Peo peoTwo=new Peo("王五",111,5,"六盘水","一班");
         Peo peoSan=new Peo("李小平",119,5,"六盘水","一班");
         Peo peoSi=new Peo("刘大强",119,5,"贵州惠水","一班");
@@ -697,21 +698,25 @@ public class XlsServiceImpl implements IXlsService {
            rowTitle.setHeight((short)700);
            // 创建第一列260
            HSSFCell cell0 = rowTitle.createCell(firstColNum);
-           cell0.setCellValue(new HSSFRichTextString("惠水民族中学高二年级(5)班"));
-           cell0.setCellStyle(XHSSFStyleFactory.newInstance().getStyle(workbook1,FirstStyle.class));
            CellRangeAddress titleRange = new CellRangeAddress(newIndexRow, newIndexRow, firstColNum, lastColNum);
            newIndexRow=newIndexRow+1;
 
            HSSFRow rowTwo=sheet.createRow(newIndexRow);
            rowTwo.setHeight((short)700);
            HSSFCell cel=rowTwo.createCell(firstColNum);
-           cel.setCellValue(new HSSFRichTextString("第二学期期末考试统计表"));
-           cel.setCellStyle(XHSSFStyleFactory.newInstance().getStyle(workbook1, TwoStyle.class));
            CellRangeAddress rangTwo=new CellRangeAddress(newIndexRow,newIndexRow,firstColNum,lastColNum);
            newIndexRow=newIndexRow+1;
-
            sheet.addMergedRegion(titleRange);
            sheet.addMergedRegion(rangTwo);
+
+           cel.setCellValue(new HSSFRichTextString("第二学期期末考试统计表"));
+           for(Cell cellLin:rowTwo){
+               System.out.println("----::::");
+               cellLin.setCellStyle(XHSSFStyleFactory.newInstance().getStyle(workbook1, TwoStyle.class));
+           }
+           cell0.setCellValue(new HSSFRichTextString("惠水民族中学高二年级(5)班"));
+           cell0.setCellStyle(XHSSFStyleFactory.newInstance().getStyle(workbook1,FirstStyle.class));
+
            return newIndexRow;
        }),list,Peo.class,((workbook1, sheet, indexRow) -> {
            int newIndexRow=indexRow;
@@ -730,10 +735,10 @@ public class XlsServiceImpl implements IXlsService {
            HSSFRow rowTwo=sheet.createRow(newIndexRow);
            rowTwo.setHeight((short)700);
            HSSFCell cel=rowTwo.createCell(firstColNum);
-           cel.setCellValue(new HSSFRichTextString("李靖老师：这个学期啊，成绩明显下降了100%，要不得，要不得勒！"));
-           cel.setCellStyle(headStyle);
            CellRangeAddress rangTwo=new CellRangeAddress(newIndexRow,newIndexRow,firstColNum,lastColNum);
            sheet.addMergedRegion(rangTwo);
+           cel.setCellValue(new HSSFRichTextString("李靖老师：这个学期啊，成绩明显下降了100%，要不得，要不得勒！"));
+           cel.setCellStyle(headStyle);
        }));
        OutputStream out=null;
        try {
