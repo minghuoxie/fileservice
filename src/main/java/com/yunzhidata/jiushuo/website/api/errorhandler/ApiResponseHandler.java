@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import java.lang.reflect.AnnotatedElement;
-import java.util.HashMap;
-import java.util.Map;
 
 @ControllerAdvice
 public class ApiResponseHandler implements ResponseBodyAdvice {

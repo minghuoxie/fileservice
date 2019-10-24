@@ -3,9 +3,6 @@ package com.yunzhidata.jiushuo.website.help.xlsgenelate.xlsstyle;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class XHSSFStyleFactory {
     private HSSFGetStyle firstStyle;
     private static XHSSFStyleFactory factory;
