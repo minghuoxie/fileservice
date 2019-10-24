@@ -1,6 +1,7 @@
 package com.yunzhidata.jiushuo.website.controller;
 
 import com.yunzhidata.jiushuo.website.api.errorhandler.ApiResponse;
+import com.yunzhidata.jiushuo.website.api.errorhandler.ApiResponseAnnotation;
 import com.yunzhidata.jiushuo.website.dto.MapDto;
 import com.yunzhidata.jiushuo.website.input.ImgInputType;
 import org.springframework.stereotype.Controller;
@@ -86,6 +87,30 @@ public class ErrorHandlerController {
     @ResponseBody
     public Map<String,String> erNullError(){
         Map<String,String> map=null;
+        map.put("one","erError");
+        return map;
+    }
+
+
+    /**
+     *验证拦截
+     * */
+    @RequestMapping(value = "/erroe/filter",method = RequestMethod.GET)
+    @ResponseBody
+    @ApiResponseAnnotation
+    public Map<String,String> filter(){
+        //模拟一个异常
+      //  int i=Integer.parseInt("1+1");
+
+        Map<String,String> map=new HashMap<>();
+        map.put("one","erError");
+        return map;
+    }
+
+    @RequestMapping(value = "/erroe/nofilter",method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,String> nofilter(){
+        Map<String,String> map=new HashMap<>();
         map.put("one","erError");
         return map;
     }

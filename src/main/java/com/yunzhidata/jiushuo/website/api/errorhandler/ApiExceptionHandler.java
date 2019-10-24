@@ -3,9 +3,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @ControllerAdvice
 public class ApiExceptionHandler {
     /**
@@ -35,11 +32,12 @@ public class ApiExceptionHandler {
      */
     @ResponseBody
     @ExceptionHandler(value = Exception.class)
-    public Map errorHandler(Exception ex) {
+    public ApiResponseEntity errorHandler(Exception ex) {
       //  System.out.println("----------------errorHandler"+ex.getMessage());
-        Map map = new HashMap();
-        map.put("code", 100);
-        map.put("msg", ex.getMessage());
-        return map;
+//        Map map = new HashMap();
+//        map.put("code", 100);
+//        map.put("msg", ex.getMessage());
+        ApiResponseEntity errorBody=new ApiResponseEntity(500,false,"请求失败", ex.getMessage());
+        return errorBody;
     }
 }
